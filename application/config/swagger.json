@@ -1,0 +1,264 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Loan API",
+    "version": "1.0.0",
+    "description": "Complete API documentation with JWT authentication, product listing, registration, OTP and profile flows"
+  },
+  "servers": [
+    {
+      "url": "https://qaapi.kredbharat.com"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 1 },
+          "message": { "type": "string" }
+        }
+      },
+
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 0 },
+          "message": { "type": "string" }
+        }
+      },
+
+      "LoginRequest": {
+        "type": "object",
+        "required": ["mobile"],
+        "properties": {
+          "mobile": { "type": "string", "example": "9911085315" }
+        }
+      },
+
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 1 },
+          "message": { "type": "string", "example": "Login successful" },
+          "jwt_access_token": { "type": "string" }
+        }
+      },
+
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["full_name", "mobile_no", "loan_amount"],
+        "properties": {
+          "full_name": { "type": "string", "example": "Rahul Kumar" },
+          "mobile_no": { "type": "string", "example": "9911085315" },
+          "loan_amount": { "type": "number", "example": 50000 },
+          "utm_source": { "type": "string" },
+          "utm_medium": { "type": "string" },
+          "utm_campaign": { "type": "string" }
+        }
+      },
+
+      "OtpVerifyRequest": {
+        "type": "object",
+        "required": ["user_otp"],
+        "properties": {
+          "user_otp": { "type": "string", "example": "1234" }
+        }
+      },
+
+      "SalariedRequest": {
+        "type": "object",
+        "properties": {
+          "user_pancard": { "type": "string", "example": "ABCDE1234F" },
+          "user_email": { "type": "string", "example": "test@gmail.com" },
+          "user_pincode": { "type": "string", "example": "110001" },
+          "employment_type": { "type": "string", "example": "1" },
+          "users_income": { "type": "number", "example": 25000 }
+        }
+      },
+
+      "NonSalariedRequest": {
+        "type": "object",
+        "properties": {
+          "business_name": { "type": "string" },
+          "business_gst": { "type": "string" },
+          "business_gst_check": { "type": "boolean" },
+          "business_turnover": { "type": "string" },
+          "business_loan_amount": { "type": "number" },
+          "users_dob": { "type": "string", "example": "1995-01-01" },
+          "business_vintage": { "type": "string" }
+        }
+      },
+
+      "ProductListResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer" },
+          "message": { "type": "string" },
+          "user_uid": { "type": "string" },
+          "full_name": { "type": "string" },
+          "credit_score": { "type": "string" },
+          "sponsored_products": {
+            "type": "array",
+            "items": { "type": "object" }
+          },
+          "products": {
+            "type": "array",
+            "items": { "type": "object" }
+          }
+        }
+      }
+
+    }
+  },
+
+  "paths": {
+
+    "/api/health": {
+      "get": {
+        "summary": "API Health Check",
+        "responses": {
+          "200": {
+            "description": "API working"
+          }
+        }
+      }
+    },
+
+    "/api/login": {
+      "post": {
+        "summary": "Login with mobile number",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login success",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LoginResponse" }
+              }
+            }
+          },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+
+    "/api/register": {
+      "post": {
+        "summary": "Register new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RegisterRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Registered successfully" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/otp_verify": {
+      "post": {
+        "summary": "Verify OTP",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OtpVerifyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OTP verified" },
+          "401": { "description": "Invalid OTP or token" }
+        }
+      }
+    },
+
+    "/api/resend_otp": {
+      "post": {
+        "summary": "Resend OTP",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "OTP sent" }
+        }
+      }
+    },
+
+    "/api/product_list": {
+      "post": {
+        "summary": "Get product list",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Product list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductListResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+
+    "/api/salaried": {
+      "post": {
+        "summary": "Update salaried user details",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SalariedRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated successfully" }
+        }
+      }
+    },
+
+    "/api/non_salaried": {
+      "post": {
+        "summary": "Update non-salaried user details",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NonSalariedRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated successfully" }
+        }
+      }
+    }
+
+  }
+}
