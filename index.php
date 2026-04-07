@@ -1,5 +1,5 @@
 <?php
-echo "HELLO";die;
+echo "HELLO===============";die;
 /**
  * CodeIgniter
  *
