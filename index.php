@@ -1,5 +1,4 @@
 <?php
-echo "It's Working Now"; die;
 /**
  * CodeIgniter
  *
