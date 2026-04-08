@@ -1,5 +1,5 @@
 <?php
-echo "new line"; die;
+echo "PULL NOT WORKING"; die;
 /**
  * CodeIgniter
  *
