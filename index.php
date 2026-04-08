@@ -1,5 +1,5 @@
 <?php
-echo "Again Not working PULL NOT WORKING"; die;
+echo "It's Working Now"; die;
 /**
  * CodeIgniter
  *
